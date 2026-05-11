@@ -1,5 +1,27 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
+val appName: String = providers.gradleProperty("app.name").get()
+
+val generateBuildConfig by tasks.registering {
+    val outputDir = layout.buildDirectory.dir("generated/buildconfig/kotlin")
+    val name = appName
+    outputs.dir(outputDir)
+    doLast {
+        val file = outputDir.get().asFile
+            .resolve("org/bradgravett/blindsphinx/BuildConfig.kt")
+        file.parentFile.mkdirs()
+        file.writeText(
+            """
+            package org.bradgravett.blindsphinx
+
+            object BuildConfig {
+                const val APP_NAME = "$name"
+            }
+            """.trimIndent()
+        )
+    }
+}
+
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.composeMultiplatform)
@@ -24,10 +46,13 @@ kotlin {
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
-        jvmMain.dependencies {
-            implementation(compose.desktop.currentOs)
-            implementation(libs.kotlinx.coroutinesSwing)
-            implementation("forge:forge-game:2.0.13-SNAPSHOT")
+        jvmMain {
+            kotlin.srcDir(generateBuildConfig)
+            dependencies {
+                implementation(compose.desktop.currentOs)
+                implementation(libs.kotlinx.coroutinesSwing)
+                implementation("forge:forge-game:2.0.13-SNAPSHOT")
+            }
         }
     }
 }

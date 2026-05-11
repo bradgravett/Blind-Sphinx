@@ -1,3 +1,7 @@
+Blind Sphinx is software to automatically resolve matchups for a variant of Magic: The Gathering, called 3 Card Blind.
+Blind Sphinx relies on Forge for rules adjudication, found at https://github.com/Card-Forge/forge. Blind Sphinx uses the
+engine as a Maven dependency. 
+
 This is a Kotlin Multiplatform project targeting Desktop (JVM).
 
 * [/composeApp](./composeApp/src) is for code that will be shared across your Compose Multiplatform applications.
