@@ -40,8 +40,10 @@ kotlin {
             implementation(libs.compose.ui)
             implementation(libs.compose.components.resources)
             implementation(libs.compose.uiToolingPreview)
+            implementation(compose.materialIconsExtended)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+            implementation("org.jetbrains.compose.ui:ui-tooling:1.10.3")
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -52,6 +54,8 @@ kotlin {
                 implementation(compose.desktop.currentOs)
                 implementation(libs.kotlinx.coroutinesSwing)
                 implementation("forge:forge-game:2.0.13-SNAPSHOT")
+                implementation("forge:forge-core:2.0.13-SNAPSHOT")
+
             }
         }
     }

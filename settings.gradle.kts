@@ -1,4 +1,4 @@
-rootProject.name = "BlindSphinx"
+rootProject.name = "Blind-Sphinx"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
@@ -18,7 +18,7 @@ pluginManagement {
 dependencyResolutionManagement {
     repositories {
         maven {
-            url = uri("https://maven.pkg.github.com/bradgravett/BlindSphinx")
+            url = uri("https://maven.pkg.github.com/bradgravett/Blind-Sphinx")
             credentials {
                 username = providers.gradleProperty("gpr.user").orNull ?: System.getenv("GITHUB_ACTOR")
                 password = providers.gradleProperty("gpr.token").orNull ?: System.getenv("GITHUB_TOKEN")

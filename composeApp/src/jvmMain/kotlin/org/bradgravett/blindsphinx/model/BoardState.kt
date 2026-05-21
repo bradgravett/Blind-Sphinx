@@ -1,4 +1,5 @@
 package org.bradgravett.blindsphinx.model
 
-class BoardState {
-}
+import forge.game.Game
+
+class BoardState(val game: Game)
