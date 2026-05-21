@@ -3,6 +3,8 @@ package org.bradgravett.blindsphinx.model
 import forge.CardStorageReader
 import forge.ImageKeys
 import forge.StaticData
+import forge.card.CardEdition
+import forge.item.PaperCard
 import forge.util.Lang
 import forge.util.Localizer
 import java.io.File
@@ -63,11 +65,34 @@ class CardRepository {
           false,
         )
 
-        cardNames = StaticData.instance().commonCards.uniqueCards.map { it.name }.sorted()
+        cardNames =
+          StaticData.instance()
+            .commonCards
+            .uniqueCards
+            .filter { isVintageLegal(it) }
+            .map { it.name }
+            .sorted()
 
         emit(StartupState.Ready(cardNames.size))
       }
       .flowOn(Dispatchers.IO)
+
+  private fun isVintageLegal(card: PaperCard): Boolean {
+    val excludedTypes =
+      setOf(
+        CardEdition.Type.FUNNY,
+        CardEdition.Type.ONLINE,
+        CardEdition.Type.DRAFT,
+        CardEdition.Type.CUSTOM_SET,
+        CardEdition.Type.UNKNOWN,
+      )
+    return StaticData.instance().commonCards.getAllCards(card.name).any { printing ->
+      val edition = StaticData.instance().getCardEdition(printing.edition)
+      edition != null &&
+        edition.type !in excludedTypes &&
+        edition.borderColor != CardEdition.BorderColor.SILVER
+    }
+  }
 
   fun getSuggestions(query: String, limit: Int = 10): List<String> {
     if (query.isBlank()) return emptyList()
