@@ -18,17 +18,17 @@ fun main() {
   // Override card data location for local development. Production uses ~/.blindsphinx/res/
   // (downloaded on first run).
   System.setProperty(
-      "blindsphinx.forge.res",
-      System.getProperty("user.home") + "/Desktop/Repos/forge/forge-gui/res",
+    "blindsphinx.forge.res",
+    System.getProperty("user.home") + "/Desktop/Repos/forge/forge-gui/res",
   )
   System.setProperty("apple.awt.application.name", BuildConfig.APP_NAME)
   application {
     Window(
-        onCloseRequest = ::exitApplication,
-        state = rememberWindowState(),
-        title = BuildConfig.APP_NAME,
-        transparent = true,
-        undecorated = true,
+      onCloseRequest = ::exitApplication,
+      state = rememberWindowState(),
+      title = BuildConfig.APP_NAME,
+      transparent = true,
+      undecorated = true,
     ) {
       CompositionLocalProvider(LocalComposeWindow provides window) {
         MaterialTheme {

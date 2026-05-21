@@ -25,22 +25,24 @@ fun PlayerEntry(getSuggestions: (String) -> List<String> = { emptyList() }) {
 
   OutlinedCard {
     SimpleTable(
-        SimpleTableDirection.ColumnsThenRows,
-        content =
-            listOf(
-                listOf(
-                    { Text("Player Name", maxLines = 1, softWrap = false) },
-                    { Text("Card 1", maxLines = 1, softWrap = false) },
-                    { Text("Card 2", maxLines = 1, softWrap = false) },
-                    { Text("Card 3", maxLines = 1, softWrap = false) },
-                ),
-                listOf(
-                    { TextField(value = playerName, onValueChange = { playerName = it }, singleLine = true) },
-                    { CardAutocompleteField(getSuggestions) },
-                    { CardAutocompleteField(getSuggestions) },
-                    { CardAutocompleteField(getSuggestions) },
-                ),
-            ),
+      SimpleTableDirection.ColumnsThenRows,
+      content =
+        listOf(
+          listOf(
+            { Text("Player Name", maxLines = 1, softWrap = false) },
+            { Text("Card 1", maxLines = 1, softWrap = false) },
+            { Text("Card 2", maxLines = 1, softWrap = false) },
+            { Text("Card 3", maxLines = 1, softWrap = false) },
+          ),
+          listOf(
+            {
+              TextField(value = playerName, onValueChange = { playerName = it }, singleLine = true)
+            },
+            { CardAutocompleteField(getSuggestions) },
+            { CardAutocompleteField(getSuggestions) },
+            { CardAutocompleteField(getSuggestions) },
+          ),
+        ),
     )
   }
 }
@@ -53,32 +55,32 @@ private fun CardAutocompleteField(getSuggestions: (String) -> List<String>) {
   val suggestions = remember(query) { getSuggestions(query) }
 
   ExposedDropdownMenuBox(
-      expanded = expanded && suggestions.isNotEmpty(),
-      onExpandedChange = { expanded = it },
+    expanded = expanded && suggestions.isNotEmpty(),
+    onExpandedChange = { expanded = it },
   ) {
     TextField(
-        value = query,
-        onValueChange = {
-          query = it
-          expanded = true
-        },
-        singleLine = true,
-        trailingIcon = {
-          ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded && suggestions.isNotEmpty())
-        },
-        modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable),
+      value = query,
+      onValueChange = {
+        query = it
+        expanded = true
+      },
+      singleLine = true,
+      trailingIcon = {
+        ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded && suggestions.isNotEmpty())
+      },
+      modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable),
     )
     ExposedDropdownMenu(
-        expanded = expanded && suggestions.isNotEmpty(),
-        onDismissRequest = { expanded = false },
+      expanded = expanded && suggestions.isNotEmpty(),
+      onDismissRequest = { expanded = false },
     ) {
       suggestions.forEach { name ->
         DropdownMenuItem(
-            text = { Text(name) },
-            onClick = {
-              query = name
-              expanded = false
-            },
+          text = { Text(name) },
+          onClick = {
+            query = name
+            expanded = false
+          },
         )
       }
     }

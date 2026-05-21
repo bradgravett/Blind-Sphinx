@@ -44,23 +44,25 @@ fun TitleBar(closeWindow: () -> Unit) {
   var pinned by remember { mutableStateOf(false) }
   Box(Modifier.fillMaxWidth().height(32.dp)) {
     Box(
-        Modifier.fillMaxSize()
-            .onPointerEvent(PointerEventType.Enter, onEvent = { visible = true })
-            .onPointerEvent(PointerEventType.Exit, onEvent = { visible = false })
+      Modifier.fillMaxSize()
+        .onPointerEvent(PointerEventType.Enter, onEvent = { visible = true })
+        .onPointerEvent(PointerEventType.Exit, onEvent = { visible = false })
     ) {
       AnimatedVisibility(
-          visible,
-          enter = fadeIn() + expandVertically(),
-          exit = shrinkVertically() + fadeOut(),
+        visible,
+        enter = fadeIn() + expandVertically(),
+        exit = shrinkVertically() + fadeOut(),
       ) {
         Box {
           Box(Modifier.fillMaxSize().alpha(.1f).background(Color.Black))
           Row(Modifier.fillMaxSize(), Arrangement.Start, Alignment.CenterVertically) {
             IconButton(closeWindow) { Icon(Icons.Default.Close, null) }
-            IconButton(onClick = {
-              pinned = !pinned
-              window?.isAlwaysOnTop = pinned
-            }) {
+            IconButton(
+              onClick = {
+                pinned = !pinned
+                window?.isAlwaysOnTop = pinned
+              }
+            ) {
               Icon(if (pinned) Icons.Default.PushPin else Icons.Outlined.PushPin, null)
             }
           }

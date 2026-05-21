@@ -31,11 +31,7 @@ fun MainContent(vm: MainViewModel) {
   Column {
     PrimaryTabRow(selectedTab) {
       Row(horizontalArrangement = Arrangement.Start) {
-        Tab(
-            selectedTab == 0,
-            text = { Text("Single Match") },
-            onClick = { selectedTab = 0 },
-        )
+        Tab(selectedTab == 0, text = { Text("Single Match") }, onClick = { selectedTab = 0 })
       }
     }
     Spacer(Modifier.height(halfMargin))

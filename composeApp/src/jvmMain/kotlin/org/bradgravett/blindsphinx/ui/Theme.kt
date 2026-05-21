@@ -11,23 +11,23 @@ import java.awt.Window
 val LocalComposeWindow = staticCompositionLocalOf<Window?> { null }
 
 data class Dimensions(
-    val quarterMargin: Dp,
-    val halfMargin: Dp,
-    val standardMargin: Dp,
-    val outerMargin: Dp,
-    val horizontalRuleWidth: Dp,
-    val smallestTouchTarget: Dp,
+  val quarterMargin: Dp,
+  val halfMargin: Dp,
+  val standardMargin: Dp,
+  val outerMargin: Dp,
+  val horizontalRuleWidth: Dp,
+  val smallestTouchTarget: Dp,
 )
 
 val MaterialTheme.dimensions
   @Composable
   @ReadOnlyComposable
   get() =
-      Dimensions(
-          quarterMargin = 4.dp,
-          halfMargin = 8.dp,
-          standardMargin = 16.dp,
-          outerMargin = 24.dp,
-          horizontalRuleWidth = 1.dp,
-          smallestTouchTarget = 48.dp,
-      )
+    Dimensions(
+      quarterMargin = 4.dp,
+      halfMargin = 8.dp,
+      standardMargin = 16.dp,
+      outerMargin = 24.dp,
+      horizontalRuleWidth = 1.dp,
+      smallestTouchTarget = 48.dp,
+    )
