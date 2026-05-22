@@ -3,7 +3,7 @@ package org.bradgravett.blindsphinx.model
 import forge.CardStorageReader
 import forge.ImageKeys
 import forge.StaticData
-import forge.card.CardEdition
+import forge.game.GameFormat
 import forge.item.PaperCard
 import forge.util.Lang
 import forge.util.Localizer
@@ -65,11 +65,13 @@ class CardRepository {
           false,
         )
 
+        val vintageFilter = buildVintageFilter(dir)
+
         cardNames =
           StaticData.instance()
             .commonCards
             .uniqueCards
-            .filter { isVintageLegal(it) }
+            .filter { vintageFilter.test(it) }
             .map { it.name }
             .sorted()
 
@@ -77,21 +79,11 @@ class CardRepository {
       }
       .flowOn(Dispatchers.IO)
 
-  private fun isVintageLegal(card: PaperCard): Boolean {
-    val excludedTypes =
-      setOf(
-        CardEdition.Type.FUNNY,
-        CardEdition.Type.ONLINE,
-        CardEdition.Type.DRAFT,
-        CardEdition.Type.CUSTOM_SET,
-        CardEdition.Type.UNKNOWN,
-      )
-    return StaticData.instance().commonCards.getAllCards(card.name).any { printing ->
-      val edition = StaticData.instance().getCardEdition(printing.edition)
-      edition != null &&
-        edition.type !in excludedTypes &&
-        edition.borderColor != CardEdition.BorderColor.SILVER
-    }
+  private fun buildVintageFilter(resDir: File): java.util.function.Predicate<PaperCard> {
+    val formatsDir = File(resDir, "formats${File.separator}Sanctioned")
+    val emptyDir = File(cacheResDir().parentFile, "formats_user")
+    val formats = GameFormat.Collection(GameFormat.Reader(formatsDir, emptyDir, false))
+    return formats.vintage?.filterRules ?: java.util.function.Predicate { true }
   }
 
   fun getSuggestions(query: String, limit: Int = 10): List<String> {
