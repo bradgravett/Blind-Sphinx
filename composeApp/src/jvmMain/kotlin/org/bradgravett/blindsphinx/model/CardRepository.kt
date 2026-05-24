@@ -88,7 +88,8 @@ class CardRepository {
 
   fun getSuggestions(query: String, limit: Int = 10): List<String> {
     if (query.isBlank()) return emptyList()
-    return cardNames.filter { it.startsWith(query, ignoreCase = true) }.take(limit)
+    val (startsWith, rest) = cardNames.partition { it.startsWith(query, ignoreCase = true) }
+    return (startsWith + rest.filter { it.contains(query, ignoreCase = true) }).take(limit)
   }
 
   // Returns the res dir if already available (dev override or valid cache), null if download

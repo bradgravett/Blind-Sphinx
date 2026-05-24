@@ -1,5 +1,7 @@
 package org.bradgravett.blindsphinx.ui.components
 
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
@@ -16,11 +18,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import org.bradgravett.blindsphinx.ui.dimensions
 
 @Composable
 fun PlayerEntry(getSuggestions: (String) -> List<String> = { emptyList() }) {
-  var playerName by remember { mutableStateOf("") }
+  val playerName = rememberTextFieldState()
   val (quarterMargin, halfMargin, standardMargin, outerMargin) = MaterialTheme.dimensions
 
   OutlinedCard {
@@ -35,9 +38,7 @@ fun PlayerEntry(getSuggestions: (String) -> List<String> = { emptyList() }) {
             { Text("Card 3", maxLines = 1, softWrap = false) },
           ),
           listOf(
-            {
-              TextField(value = playerName, onValueChange = { playerName = it }, singleLine = true)
-            },
+            { TextField(playerName, Modifier.widthIn(240.dp), label = { Text("Player Name") }) },
             { CardAutocompleteField(getSuggestions) },
             { CardAutocompleteField(getSuggestions) },
             { CardAutocompleteField(getSuggestions) },
@@ -57,6 +58,7 @@ private fun CardAutocompleteField(getSuggestions: (String) -> List<String>) {
   ExposedDropdownMenuBox(
     expanded = expanded && suggestions.isNotEmpty(),
     onExpandedChange = { expanded = it },
+    modifier = Modifier.widthIn(max = 240.dp),
   ) {
     TextField(
       value = query,
