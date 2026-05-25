@@ -41,7 +41,7 @@ kotlin {
       implementation(libs.compose.ui)
       implementation(libs.compose.components.resources)
       implementation(libs.compose.uiToolingPreview)
-      implementation(compose.materialIconsExtended)
+      implementation("org.jetbrains.compose.material:material-icons-extended:1.7.3")
       implementation(libs.androidx.lifecycle.viewmodelCompose)
       implementation(libs.androidx.lifecycle.runtimeCompose)
       implementation("org.jetbrains.compose.ui:ui-tooling:1.10.3")
@@ -67,6 +67,15 @@ compose.desktop {
       targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
       packageName = "org.bradgravett.blindsphinx"
       packageVersion = "1.0.0"
+      macOS {
+        iconFile.set(project.file("src/jvmMain/composeResources/drawable/app-icon-mac.icns"))
+      }
+      windows {
+        iconFile.set(project.file("src/jvmMain/composeResources/drawable/app-icon-windows.ico"))
+      }
+      linux {
+        iconFile.set(project.file("src/jvmMain/composeResources/drawable/app-icon-linux.png"))
+      }
     }
   }
 }
