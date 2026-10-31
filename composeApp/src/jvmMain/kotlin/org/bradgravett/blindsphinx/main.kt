@@ -19,7 +19,7 @@ fun main() {
   // (downloaded on first run).
   System.setProperty(
     "blindsphinx.forge.res",
-    System.getProperty("user.home") + "/Desktop/Repos/forge/forge-gui/res",
+    System.getProperty("user.home") + "/Developer/forge/forge-gui/res",
   )
   System.setProperty("apple.awt.application.name", BuildConfig.APP_NAME)
   application {

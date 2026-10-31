@@ -52,8 +52,8 @@ kotlin {
       dependencies {
         implementation(compose.desktop.currentOs)
         implementation(libs.kotlinx.coroutinesSwing)
-        implementation("forge:forge-game:2.0.13-SNAPSHOT")
-        implementation("forge:forge-core:2.0.13-SNAPSHOT")
+        implementation("forge:forge-game:2.0.16-SNAPSHOT")
+        implementation("forge:forge-core:2.0.16-SNAPSHOT")
       }
     }
   }
