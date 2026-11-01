@@ -7,7 +7,6 @@ on:
 
 permissions:
   contents: write
-  packages: read
 
 jobs:
   build:
@@ -28,20 +27,25 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true
 
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 21
+          cache: maven
+          cache-dependency-path: forge/**/pom.xml
 
       - uses: gradle/actions/setup-gradle@v4
+
+      - name: Install Forge
+        run: ./gradlew installForge
+        shell: bash
 
       - name: Build installer
         run: ./gradlew :composeApp:${{ matrix.task }}
         shell: bash
-        env:
-          GITHUB_ACTOR: ${{ github.actor }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload to release
         uses: softprops/action-gh-release@v2

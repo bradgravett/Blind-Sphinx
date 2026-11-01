@@ -15,12 +15,6 @@ import org.bradgravett.blindsphinx.ui.LocalComposeWindow
 import org.bradgravett.blindsphinx.ui.components.TitleBar
 
 fun main() {
-  // Override card data location for local development. Production uses ~/.blindsphinx/res/
-  // (downloaded on first run).
-  System.setProperty(
-    "blindsphinx.forge.res",
-    System.getProperty("user.home") + "/Developer/forge/forge-gui/res",
-  )
   System.setProperty("apple.awt.application.name", BuildConfig.APP_NAME)
   application {
     Window(

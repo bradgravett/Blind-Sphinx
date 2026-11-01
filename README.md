@@ -1,6 +1,6 @@
 Blind Sphinx is software to automatically resolve matchups for a variant of Magic: The Gathering, called 3 Card Blind.
-Blind Sphinx relies on Forge for rules adjudication, found at https://github.com/Card-Forge/forge. Blind Sphinx uses the
-engine as a Maven dependency.
+Blind Sphinx relies on Forge for rules adjudication, found at https://github.com/Card-Forge/forge. Forge is included as
+a git submodule at [/forge](./forge), built with Maven, and consumed from the local Maven repository.
 
 This is a Kotlin Multiplatform project targeting Desktop (JVM).
 
@@ -12,6 +12,24 @@ This is a Kotlin Multiplatform project targeting Desktop (JVM).
     the [iosMain](./composeApp/src/iosMain/kotlin) folder would be the right place for such calls.
     Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./composeApp/src/jvmMain/kotlin)
     folder is the appropriate location.
+
+### Prerequisites
+
+- JDK 17 or newer
+- Maven (`brew install maven` on macOS)
+
+Clone with the Forge submodule, then build and install Forge into `~/.m2`. Re-run `installForge` after updating the
+submodule; it is skipped when Forge is already installed for the current submodule commit.
+```shell
+git clone --recursive https://github.com/bradgravett/Blind-Sphinx.git
+cd Blind-Sphinx
+./gradlew installForge
+```
+
+Already cloned without `--recursive`? Run `git submodule update --init` first.
+
+To move to Forge's newest release (`forge-X.Y.Z` tag), run `./gradlew updateForge`, then `./gradlew installForge`, and
+commit the updated `forge` submodule.
 
 ### Build and Run Desktop (JVM) Application
 

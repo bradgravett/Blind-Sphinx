@@ -18,20 +18,8 @@ pluginManagement {
 
 dependencyResolutionManagement {
   repositories {
-    // Local builds: Forge installed via `mvn install`. CI: GitHub Packages (credentials required).
+    // Forge comes from the ./forge submodule via `./gradlew installForge`.
     mavenLocal { mavenContent { includeGroup("forge") } }
-    val gprUser = providers.gradleProperty("gpr.user").orNull ?: System.getenv("GITHUB_ACTOR")
-    val gprToken = providers.gradleProperty("gpr.token").orNull ?: System.getenv("GITHUB_TOKEN")
-    if (gprUser != null && gprToken != null) {
-      maven {
-        url = uri("https://maven.pkg.github.com/bradgravett/Blind-Sphinx")
-        credentials {
-          username = gprUser
-          password = gprToken
-        }
-        mavenContent { includeGroup("forge") }
-      }
-    }
     google {
       mavenContent {
         includeGroupAndSubgroups("androidx")

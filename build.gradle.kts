@@ -11,12 +11,12 @@ plugins {
 spotless {
   kotlin {
     target("**/*.kt")
-    targetExclude("**/build/**/*.kt")
+    targetExclude("**/build/**/*.kt", "forge/**")
     ktfmt("0.54").googleStyle()
   }
   kotlinGradle {
     target("**/*.kts")
-    targetExclude("**/build/**/*.kts")
+    targetExclude("**/build/**/*.kts", "forge/**")
     ktfmt("0.54").googleStyle()
   }
 }
