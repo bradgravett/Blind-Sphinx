@@ -146,6 +146,7 @@ kotlin {
       implementation(libs.androidx.lifecycle.viewmodelCompose)
       implementation(libs.androidx.lifecycle.runtimeCompose)
       implementation("org.jetbrains.compose.ui:ui-tooling:1.10.3")
+      implementation("org.jetbrains.compose.ui:ui-tooling-preview:1.10.0")
     }
     commonTest.dependencies { implementation(libs.kotlin.test) }
     jvmMain {

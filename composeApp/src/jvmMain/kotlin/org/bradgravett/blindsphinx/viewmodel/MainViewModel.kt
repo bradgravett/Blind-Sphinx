@@ -3,6 +3,7 @@ package org.bradgravett.blindsphinx.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import forge.game.zone.ZoneType
+import forge.item.PaperCard
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -30,6 +31,11 @@ class MainViewModel : ViewModel() {
   }
 
   fun getSuggestions(query: String): List<String> = cardRepository.getSuggestions(query)
+
+  fun getCard(query: String): PaperCard = cardRepository.getCard(query).fold(
+    onSuccess = { it },
+    onFailure = { PaperCard.FAKE_CARD }
+  )
 
   fun getValidActions(gameState: BoardState): List<GameAction> {
     val game = gameState.game

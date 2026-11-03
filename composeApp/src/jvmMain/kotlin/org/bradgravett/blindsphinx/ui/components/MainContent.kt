@@ -15,10 +15,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import org.bradgravett.blindsphinx.model.TcbMatch
 import org.bradgravett.blindsphinx.ui.dimensions
 import org.bradgravett.blindsphinx.viewmodel.MainViewModel
 
@@ -27,6 +29,7 @@ import org.bradgravett.blindsphinx.viewmodel.MainViewModel
 fun MainContent(vm: MainViewModel) {
   var selectedTab by remember { mutableIntStateOf(0) }
   val (quarterMargin, halfMargin, standardMargin, outerMargin) = MaterialTheme.dimensions
+  var currentMatch by remember { mutableStateOf(TcbMatch()) }
 
   Column {
     PrimaryTabRow(selectedTab) {
@@ -36,15 +39,23 @@ fun MainContent(vm: MainViewModel) {
     }
     Spacer(Modifier.height(halfMargin))
     Row {
-      PlayerEntry(getSuggestions = vm::getSuggestions)
-      Spacer(Modifier.width(halfMargin))
-      PlayerEntry(getSuggestions = vm::getSuggestions)
+      PlayerEntry(getSuggestions = vm::getSuggestions, getCard = vm::getCard) {
+          currentMatch = currentMatch.copy(player1decklist = it)
+      }
+        Spacer(Modifier.width(halfMargin))
+      PlayerEntry(getSuggestions = vm::getSuggestions, getCard = vm::getCard) {
+        currentMatch = currentMatch.copy(player2decklist = it)
+
+      }
     }
+    Spacer(Modifier.height(halfMargin))
+
+
   }
 }
 
 @Composable
-@Preview(heightDp = 360, widthDp = 640)
+@Preview(heightDp = 640, widthDp = 720)
 private fun MainContentPreview() {
   ElevatedCard { MainContent(MainViewModel()) }
 }

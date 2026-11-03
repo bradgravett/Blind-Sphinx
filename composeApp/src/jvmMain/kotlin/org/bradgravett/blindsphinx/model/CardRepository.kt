@@ -20,128 +20,138 @@ import kotlinx.coroutines.flow.flowOn
 
 private const val FORGE_RES_VERSION = "2.0.13"
 private const val FORGE_RES_URL =
-  "https://github.com/bradgravett/Blind-Sphinx/releases/download/forge-res-$FORGE_RES_VERSION/forge-res-$FORGE_RES_VERSION.zip"
+    "https://github.com/bradgravett/Blind-Sphinx/releases/download/forge-res-$FORGE_RES_VERSION/forge-res-$FORGE_RES_VERSION.zip"
 
 class CardRepository {
 
-  var cardNames: List<String> = emptyList()
-    private set
+    var cardNames: List<String> = emptyList()
+        private set
 
-  fun initialize(): Flow<StartupState> =
-    flow {
-        val resDir = resolveResDir()
+    var paperCards: List<PaperCard> = emptyList()
 
-        if (resDir == null) {
-          emit(StartupState.Downloading(0f))
-          downloadAndExtract { progress -> emit(StartupState.Downloading(progress)) }
-        }
+    fun initialize(): Flow<StartupState> =
+        flow {
+            val resDir = resolveResDir()
 
-        emit(StartupState.Loading)
-
-        val dir = resDir ?: cacheResDir()
-
-        val customEditionsDir =
-          File(cacheResDir().parentFile, "custom_editions").also { it.mkdirs() }
-
-        ImageKeys.initializeDirs("", emptyMap(), "", "", "", "", "", "", "")
-        Lang.createInstance("en-US")
-        Localizer.getInstance()
-          .initialize("en-US", "${dir.path}${File.separator}languages${File.separator}")
-
-        val cardReader =
-          CardStorageReader(
-            "${dir.path}${File.separator}cardsfolder${File.separator}",
-            CardStorageReader.ProgressObserver.emptyObserver,
-            false,
-          )
-        StaticData(
-          cardReader,
-          null,
-          "${dir.path}${File.separator}editions${File.separator}",
-          customEditionsDir.path + File.separator,
-          "${dir.path}${File.separator}blockdata${File.separator}",
-          "Latest Art All Editions",
-          true,
-          false,
-        )
-
-        val vintageFilter = buildVintageFilter(dir)
-
-        cardNames =
-          StaticData.instance()
-            .commonCards
-            .uniqueCards
-            .filter { vintageFilter.test(it) }
-            .map { it.name }
-            .sorted()
-
-        emit(StartupState.Ready(cardNames.size))
-      }
-      .flowOn(Dispatchers.IO)
-
-  private fun buildVintageFilter(resDir: File): java.util.function.Predicate<PaperCard> {
-    val formatsDir = File(resDir, "formats${File.separator}Sanctioned")
-    val emptyDir = File(cacheResDir().parentFile, "formats_user")
-    val formats = GameFormat.Collection(GameFormat.Reader(formatsDir, emptyDir, false))
-    return formats.vintage?.filterRules ?: java.util.function.Predicate { true }
-  }
-
-  fun getSuggestions(query: String, limit: Int = 10): List<String> {
-    if (query.isBlank()) return emptyList()
-    val (startsWith, rest) = cardNames.partition { it.startsWith(query, ignoreCase = true) }
-    return (startsWith + rest.filter { it.contains(query, ignoreCase = true) }).take(limit)
-  }
-
-  // Returns the res dir if already available (dev override or valid cache), null if download
-  // needed.
-  private fun resolveResDir(): File? {
-    val override = System.getProperty("blindsphinx.forge.res")
-    if (override != null) return File(override)
-
-    val cached = cacheResDir()
-    val versionFile = File(cached, ".version")
-    if (versionFile.exists() && versionFile.readText().trim() == FORGE_RES_VERSION) return cached
-
-    return null
-  }
-
-  private fun cacheResDir(): File =
-    File(System.getProperty("user.home"), ".blindsphinx${File.separator}res")
-
-  private suspend fun downloadAndExtract(onProgress: suspend (Float) -> Unit) {
-    val destDir = cacheResDir()
-    destDir.deleteRecursively()
-    destDir.mkdirs()
-
-    val client = HttpClient.newHttpClient()
-    val request = HttpRequest.newBuilder(URI.create(FORGE_RES_URL)).GET().build()
-    @Suppress("BlockingMethodInNonBlockingContext")
-    val response = client.send(request, HttpResponse.BodyHandlers.ofInputStream())
-    val contentLength = response.headers().firstValueAsLong("content-length").orElse(-1L)
-
-    var bytesRead = 0L
-    ZipInputStream(response.body().buffered()).use { zip ->
-      generateSequence { zip.nextEntry }
-        .forEach { entry ->
-          val outFile = File(destDir, entry.name)
-          if (entry.isDirectory) {
-            outFile.mkdirs()
-          } else {
-            outFile.parentFile?.mkdirs()
-            outFile.outputStream().use { out ->
-              val buf = ByteArray(8192)
-              var n: Int
-              while (zip.read(buf).also { n = it } != -1) {
-                out.write(buf, 0, n)
-                bytesRead += n
-                if (contentLength > 0) onProgress(bytesRead.toFloat() / contentLength)
-              }
+            if (resDir == null) {
+                emit(StartupState.Downloading(0f))
+                downloadAndExtract { progress -> emit(StartupState.Downloading(progress)) }
             }
-          }
-          zip.closeEntry()
+
+            emit(StartupState.Loading)
+
+            val dir = resDir ?: cacheResDir()
+
+            val customEditionsDir =
+                File(cacheResDir().parentFile, "custom_editions").also { it.mkdirs() }
+
+            ImageKeys.initializeDirs("", emptyMap(), "", "", "", "", "", "", "")
+            Lang.createInstance("en-US")
+            Localizer.getInstance()
+                .initialize("en-US", "${dir.path}${File.separator}languages${File.separator}")
+
+            val cardReader =
+                CardStorageReader(
+                    "${dir.path}${File.separator}cardsfolder${File.separator}",
+                    CardStorageReader.ProgressObserver.emptyObserver,
+                    false,
+                )
+            StaticData(
+                cardReader,
+                null,
+                "${dir.path}${File.separator}editions${File.separator}",
+                customEditionsDir.path + File.separator,
+                "${dir.path}${File.separator}blockdata${File.separator}",
+                "Latest Art All Editions",
+                true,
+                false,
+            )
+
+            val vintageFilter = buildVintageFilter(dir)
+
+            StaticData.instance()
+                .commonCards
+                .uniqueCards
+                .filter { vintageFilter.test(it) }.let {
+                    cardNames = it.map { it.name }
+                        .sorted()
+                    paperCards = it
+                }
+
+            emit(StartupState.Ready(cardNames.size))
         }
+            .flowOn(Dispatchers.IO)
+
+    private fun buildVintageFilter(resDir: File): java.util.function.Predicate<PaperCard> {
+        val formatsDir = File(resDir, "formats${File.separator}Sanctioned")
+        val emptyDir = File(cacheResDir().parentFile, "formats_user")
+        val formats = GameFormat.Collection(GameFormat.Reader(formatsDir, emptyDir, false))
+        return formats.vintage?.filterRules ?: java.util.function.Predicate { true }
     }
 
-    File(destDir, ".version").writeText(FORGE_RES_VERSION)
-  }
+    fun getSuggestions(query: String, limit: Int = 10): List<String> {
+        if (query.isBlank()) return emptyList()
+        val (startsWith, rest) = cardNames.partition { it.startsWith(query, ignoreCase = true) }
+        return (startsWith + rest.filter { it.contains(query, ignoreCase = true) }).take(limit)
+    }
+
+    fun getCard(query: String): Result<PaperCard> {
+        val card = paperCards.first { it.name.contains(query, ignoreCase = true) }
+
+        return Result.success(card)
+    }
+
+    // Returns the res dir if already available (dev override or valid cache), null if download
+    // needed.
+    private fun resolveResDir(): File? {
+        val override = System.getProperty("blindsphinx.forge.res")
+        if (override != null) return File(override)
+
+        val cached = cacheResDir()
+        val versionFile = File(cached, ".version")
+        if (versionFile.exists() && versionFile.readText().trim() == FORGE_RES_VERSION) return cached
+
+        return null
+    }
+
+    private fun cacheResDir(): File =
+        File(System.getProperty("user.home"), ".blindsphinx${File.separator}res")
+
+    private suspend fun downloadAndExtract(onProgress: suspend (Float) -> Unit) {
+        val destDir = cacheResDir()
+        destDir.deleteRecursively()
+        destDir.mkdirs()
+
+        val client = HttpClient.newHttpClient()
+        val request = HttpRequest.newBuilder(URI.create(FORGE_RES_URL)).GET().build()
+
+        @Suppress("BlockingMethodInNonBlockingContext")
+        val response = client.send(request, HttpResponse.BodyHandlers.ofInputStream())
+        val contentLength = response.headers().firstValueAsLong("content-length").orElse(-1L)
+
+        var bytesRead = 0L
+        ZipInputStream(response.body().buffered()).use { zip ->
+            generateSequence { zip.nextEntry }
+                .forEach { entry ->
+                    val outFile = File(destDir, entry.name)
+                    if (entry.isDirectory) {
+                        outFile.mkdirs()
+                    } else {
+                        outFile.parentFile?.mkdirs()
+                        outFile.outputStream().use { out ->
+                            val buf = ByteArray(8192)
+                            var n: Int
+                            while (zip.read(buf).also { n = it } != -1) {
+                                out.write(buf, 0, n)
+                                bytesRead += n
+                                if (contentLength > 0) onProgress(bytesRead.toFloat() / contentLength)
+                            }
+                        }
+                    }
+                    zip.closeEntry()
+                }
+        }
+
+        File(destDir, ".version").writeText(FORGE_RES_VERSION)
+    }
 }
